@@ -9,6 +9,9 @@
 #define AR_SESSION_STARTED_POPUP_MESSAGE @"Swipe down to show the URL bar"
 #define AR_SESSION_STARTED_POPUP_TIME_IN_SECONDS 2
 
+#define ANALYTICS_DIALOG_TITLE @"Analytics data"
+#define ANALYTICS_DIALOG_MESSAGE @"Do you allow us to collect anonymous data about the usage of the app, so we can make it better?\nYou can change this later in the app settings"
+
 @interface ViewController : UIViewController
 
 @end

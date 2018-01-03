@@ -12,6 +12,7 @@
 #import "LayerView.h"
 #import "Utils.h"
 #import "XRViewer-Swift.h"
+#import "Constants.h"
 
 #define CLEAN_VIEW(v) [[v subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)]
 
@@ -128,6 +129,23 @@ typedef void (^UICompletion)(void);
     [self setupMessageController];
     [self setupReachability];
     [self setupNotifications];
+}
+
+- (void)setupFirstLaunch {
+    BOOL alreadyLaunched = [[NSUserDefaults standardUserDefaults] boolForKey:ALREADY_LAUNCHED_KEY];
+    if (!alreadyLaunched) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:ALREADY_LAUNCHED_KEY];
+        [[self messageController] showMessageWithTitle:ANALYTICS_DIALOG_TITLE message:ANALYTICS_DIALOG_MESSAGE completion:^(BOOL response) {
+            if (response) {
+                [[NSUserDefaults standardUserDefaults] setBool:NO forKey:USE_ANALYTICS_KEY];
+                [[AnalyticsManager sharedInstance] initializeWithSendUsageData:YES];
+            } else {
+                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:USE_ANALYTICS_KEY];
+                [[AnalyticsManager sharedInstance] initializeWithSendUsageData:NO];
+            }
+            
+        }];
+    }
 }
 
 - (void)setupStateController
@@ -462,10 +480,10 @@ typedef void (^UICompletion)(void);
          [[blockSelf stateController] setWebXR:NO];
      }];
     
-    [[self webController] setOnFinishLoad:^
-     {
-         [blockSelf hideSplashWithCompletion:^
-          { }];
+    [[self webController] setOnFinishLoad:^ {
+         [blockSelf hideSplashWithCompletion:^ {
+              [blockSelf setupFirstLaunch];
+          }];
      }];
     
     [[self webController] setOnInit:^(NSDictionary *uiOptionsDict)

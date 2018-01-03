@@ -252,6 +252,32 @@
     [self didShowMessage]();
 }
 
+- (void)showMessageWithTitle:(NSString*)title message:(NSString*)message completion:(void(^)(BOOL))completion {
+    PopupDialog *popup = [[PopupDialog alloc] initWithTitle:title
+                                                    message:message
+                                                      image:nil
+                                            buttonAlignment:UILayoutConstraintAxisHorizontal
+                                            transitionStyle:PopupDialogTransitionStyleBounceUp
+                                             preferredWidth:200.0
+                                           gestureDismissal:NO
+                                              hideStatusBar:TRUE
+                                                 completion:^{}
+    ];
+
+    DefaultButton *yesButton = [[DefaultButton alloc] initWithTitle:@"Yes" height:40 dismissOnTap:YES action:^ {
+        completion(YES);
+    }];
+
+    DefaultButton *noButton = [[DefaultButton alloc] initWithTitle:@"No" height:40 dismissOnTap:YES action:^{
+        completion(NO);
+    }];
+    
+    [popup addButtons: @[yesButton, noButton]];
+
+    [[self viewController] presentViewController:popup animated:YES completion:nil];
+}
+
+
 #pragma mark private
 
 - (void)setupAppearance

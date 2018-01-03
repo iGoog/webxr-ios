@@ -10,6 +10,7 @@
 #define Constants_h
 
 #define USE_ANALYTICS_KEY @"useAnalytics"
+#define ALREADY_LAUNCHED_KEY @"firstLaunch"
 
 
 #endif /* Constants_h */

@@ -33,4 +33,6 @@ typedef void (^DidHideMessageByUser)(void);
 
 - (void)showMessageAboutConnectionRequired;
 
+- (void)showMessageWithTitle:(NSString*)title message:(NSString*)message completion:(void(^)(BOOL))completion;
+
 @end

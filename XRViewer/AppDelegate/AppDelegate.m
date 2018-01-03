@@ -12,8 +12,12 @@
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
 
-    BOOL sendUsageData = [[NSUserDefaults standardUserDefaults] boolForKey:USE_ANALYTICS_KEY];
-    [[AnalyticsManager sharedInstance] initializeWithSendUsageData:sendUsageData];
+    // If it's the first time we launch the app, wait until the user responds to the analytics usage question
+    BOOL alreadyLaunched = [[NSUserDefaults standardUserDefaults] boolForKey:ALREADY_LAUNCHED_KEY];
+    if (alreadyLaunched) {
+        BOOL sendUsageData = [[NSUserDefaults standardUserDefaults] boolForKey:USE_ANALYTICS_KEY];
+        [[AnalyticsManager sharedInstance] initializeWithSendUsageData:sendUsageData];
+    }
     
     return YES;
 }
