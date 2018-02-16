@@ -217,13 +217,24 @@ typedef void (^UICompletion)(void);
      {
          if (xr)
          {
-             [blockSelf setupARKController];
-             [blockSelf setupLocationController];
-             
+             NSString* lastXRURL = [[blockSelf webController] lastXRURL];
+             NSString* currentURL = [[[[blockSelf webController] webView] URL] absoluteString];
+             if ([lastXRURL isEqualToString: currentURL]) {
+                 // We have visited this XR site already, resume the session
+                 [blockSelf resumeARKController];
+
+             } else {
+                 // New AR session
+                 [blockSelf setupARKController];
+                 [blockSelf setupLocationController];
+             }
+
              [[blockSelf stateController] setShowMode:ShowSingle];
              [[blockSelf messageController] showMessageWithTitle:AR_SESSION_STARTED_POPUP_TITLE
                                                          message:AR_SESSION_STARTED_POPUP_MESSAGE
                                                        hideAfter:AR_SESSION_STARTED_POPUP_TIME_IN_SECONDS];
+
+             [[blockSelf webController] setLastXRURL:[[[[blockSelf webController] webView] URL] absoluteString]];
          }
          else
          {
@@ -500,6 +511,17 @@ typedef void (^UICompletion)(void);
     [[AnalyticsManager sharedInstance] sendEventWithCategory:EventCategoryAction method:EventMethodWebXR object:EventObjectInitialize];
 }
 
+
+- (void)resumeARKController {
+
+    [[self animator] animate:[self arkLayerView] toFade:NO];
+
+    [[self arkController] resumeSessionWithAppState:[[self stateController] state]];
+
+    // Log event when we resume an AR session
+    [[AnalyticsManager sharedInstance] sendEventWithCategory:EventCategoryAction method:EventMethodWebXR object:EventObjectResume];
+}
+
 - (void)setupWebController
 {
     CLEAN_VIEW([self webLayerView]);
@@ -588,20 +610,6 @@ typedef void (^UICompletion)(void);
     [[self webController] setOnSettingsButtonTapped:^{
         // Before showing the settings popup, we hide the bar and the debug buttons so they are not in the way
         // After dismissing the popup, we show them again.
-        /*
-        [[blockSelf webController] showBar:NO];
-        [[blockSelf webController] hideKeyboard];
-        [[blockSelf stateController] setShowMode:ShowNothing];
-        [[blockSelf messageController] showSettingsPopup: ^(BOOL response) {
-            if (response) {
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:^(BOOL success)
-                 {}];
-            }
-            [[blockSelf webController] showBar:YES];
-            [[blockSelf stateController] setShowMode:ShowMulti];
-        }];
-         */
-        
         SettingsViewController* settingsViewController = [SettingsViewController new];
         UINavigationController* navigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
         __weak typeof (SettingsViewController*) weakSettingsViewController = settingsViewController;
@@ -615,6 +623,13 @@ typedef void (^UICompletion)(void);
         [[blockSelf webController] hideKeyboard];
         [[blockSelf stateController] setShowMode:ShowNothing];
         [blockSelf presentViewController:navigationController animated:YES completion:nil];
+    }];
+    
+    [[self webController] setOnARStop:^{
+        [[blockSelf webController] showBar:YES];
+        [[blockSelf webController] setupForWebXR:NO];
+        [[blockSelf stateController] setShowMode:ShowNothing];
+        [[blockSelf stateController] setWebXR:NO];
     }];
     
     if ([[self stateController] wasMemoryWarning])

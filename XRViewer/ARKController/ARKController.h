@@ -57,6 +57,8 @@ typedef void (^DidUpdateWindowSize)(void);
 
 - (NSDictionary *)arkData;
 
+- (void)resumeSessionWithAppState:(AppState *)state;
+
 - (void)setShowMode:(ShowMode)mode;
 - (void)setShowOptions:(ShowOptions)options;
 

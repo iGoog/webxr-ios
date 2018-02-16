@@ -186,6 +186,28 @@
     [self setShowOptions:[state showOptions]];
 }
 
+- (void)resumeSessionWithAppState:(AppState *)state
+{
+    if ([state aRRequest] == nil)
+    {
+        [self setRequest:nil];
+        [self removeAnchors:nil];
+        [self setSession:nil];
+        [[self controller] clean];
+
+        return;
+    }
+
+    [self setRequest:[state aRRequest]];
+
+    [[self session] runWithConfiguration:[self configuration]];
+
+    [self setupDeviceCamera];
+
+    [self setShowMode:[state showMode]];
+    [self setShowOptions:[state showOptions]];
+}
+
 - (void)setShowMode:(ShowMode)showMode
 {
     _showMode = showMode;

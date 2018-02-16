@@ -16,4 +16,5 @@
 
 @interface ViewController : UIViewController<UIGestureRecognizerDelegate>
 
+- (void)resumeARKController;
 @end

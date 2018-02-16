@@ -295,6 +295,8 @@ inline static WebCompletion debugCompletion(NSString *name)
         [self onJSUpdate](nil);
         
         [self callWebMethod:[[message body] objectForKey:WEB_AR_CALLBACK_OPTION] param:@"" webCompletion:NULL];
+        
+        [self onARStop]();
     }
     else if ([[message name] isEqualToString:WEB_AR_SET_UI_MESSAGE])
     {

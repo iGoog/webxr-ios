@@ -42,6 +42,7 @@ import MozillaTelemetry
     case recordPictureButton
     case relaseVideoButton
     case initialize
+    case resume
     case app
     
     func name () -> String {
@@ -50,6 +51,7 @@ import MozillaTelemetry
         case .recordPictureButton: return "record_picture_button"
         case .relaseVideoButton: return "release_video_button"
         case .initialize: return "init"
+        case .resume: return "resume"
         case .app: return "app"
         }
     }
